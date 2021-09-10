@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
@@ -13,7 +14,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class DemoWebShopTests {
 
-    SelenideElement countItemCss = $(".qty-input");
+    private final SelenideElement countItemCss = $(".qty-input");
+
 
     @BeforeAll
     static void beforeAll() {
@@ -46,14 +48,13 @@ public class DemoWebShopTests {
         getWebDriver().manage().addCookie(cookie);
         open("");
         $("#topcartlink").$(byText("Shopping cart")).click();
-        String productСharacteristics = $(".cart-item-row").$(".attributes").getText();
-
+        $(".cart-item-row").$(".attributes")
+                .shouldHave(text("Processor: Fast [+100.00] RAM: 8 GB [+60.00] " +
+                        "HDD: 400 GB [+100.00] Software: Office Suite [+100.00]"));
         assertThat(countItemCss.getValue()).isEqualTo("2");
-        assertThat(productСharacteristics).
-                contains("Processor: Fast [+100.00]", "RAM: 8 GB [+60.00]",
-                        "HDD: 400 GB [+100.00]", "Software: Office Suite [+100.00]");
 
         countItemCss.clear();
         countItemCss.setValue("0").pressEnter();
+        $(".order-summary-content").shouldHave(text("Your Shopping Cart is empty!"));
     }
 }
